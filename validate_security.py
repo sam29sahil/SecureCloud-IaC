@@ -2,6 +2,8 @@ import json
 import os
 import subprocess
 import sys
+from datetime import datetime, timezone
+from pathlib import Path
 
 REGION = "ap-south-1"
 
@@ -31,15 +33,21 @@ def aws_json(*args):
     return json.loads(output)
 
 
-def check(name, passed, detail):
-    status = "PASS" if passed else "FAIL"
-    print(f"[{status}] {name}: {detail}")
-    return passed
-
-
 def main():
     print("\nSecureCloud-IaC Security Validation")
     print("=" * 42)
+
+    results = []
+
+    def record(name, passed, detail):
+        status = "PASS" if passed else "FAIL"
+        print(f"[{status}] {name}: {detail}")
+        results.append({
+            "check": name,
+            "status": status,
+            "passed": bool(passed),
+            "detail": str(detail),
+        })
 
     try:
         # GitHub Actions runners do not have the local Terraform state.
@@ -58,12 +66,6 @@ def main():
 
         instance = response["Reservations"][0]["Instances"][0]
         subnet_id = instance["SubnetId"]
-
-        all_passed = True
-
-        def record(name, passed, detail):
-            nonlocal all_passed
-            all_passed = check(name, passed, detail) and all_passed
 
         # 1. Instance state
         record(
@@ -182,11 +184,36 @@ def main():
                 if encrypted else "An EBS volume is not encrypted",
             )
 
+        failed_count = sum(1 for item in results if not item["passed"])
+        report = {
+            "project": "SecureCloud-IaC",
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "region": REGION,
+            "instance_id": instance_id,
+            "summary": {
+                "total": len(results),
+                "passed": len(results) - failed_count,
+                "failed": failed_count,
+                "result": "PASS" if failed_count == 0 else "FAIL",
+            },
+            "checks": results,
+        }
+
+        reports_dir = Path("reports")
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        report_path = reports_dir / f"security-report-{timestamp}.json"
+        report_path.write_text(
+            json.dumps(report, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print(f"Security report saved: {report_path}")
+
         print("=" * 42)
         print("RESULT:", "ALL CHECKS PASSED"
-              if all_passed else "REVIEW FAILED CHECKS")
+              if failed_count == 0 else "REVIEW FAILED CHECKS")
 
-        if not all_passed:
+        if failed_count:
             sys.exit(1)
 
     except (RuntimeError, KeyError, IndexError,
