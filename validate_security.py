@@ -1,5 +1,5 @@
-
 import json
+import os
 import subprocess
 import sys
 
@@ -42,10 +42,14 @@ def main():
     print("=" * 42)
 
     try:
-        outputs = json.loads(
-            run_command(["terraform", "output", "-json"])
-        )
-        instance_id = outputs["instance_id"]["value"]
+        # GitHub Actions runners do not have the local Terraform state.
+        # Use EC2_INSTANCE_ID in CI; use Terraform output for local runs.
+        instance_id = os.environ.get("EC2_INSTANCE_ID")
+        if not instance_id:
+            outputs = json.loads(
+                run_command(["terraform", "output", "-json"])
+            )
+            instance_id = outputs["instance_id"]["value"]
 
         response = aws_json(
             "ec2", "describe-instances",
@@ -150,7 +154,7 @@ def main():
                 else f"{len(default_routes)} default route(s) found",
             )
 
-        # 7. Root EBS volumes encrypted
+        # 7. EBS volumes encrypted
         mappings = instance.get("BlockDeviceMappings", [])
         volume_ids = [
             mapping["Ebs"]["VolumeId"]
@@ -159,7 +163,7 @@ def main():
         ]
 
         if not volume_ids:
-            record("Root volume encryption", False,
+            record("EBS volume encryption", False,
                    "No EBS volumes found")
         else:
             volumes_data = aws_json(
