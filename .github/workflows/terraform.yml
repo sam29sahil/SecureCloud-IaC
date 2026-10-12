@@ -45,8 +45,15 @@ jobs:
       - name: Scan Terraform security
         run: checkov -d . --framework terraform --soft-fail
 
-      - name: Inspect GitHub OIDC claims
-        uses: github/actions-oidc-debugger@main
+      - name: Show expected OIDC subject
+        if: github.event_name != 'pull_request'
+        env:
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_REF: ${{ github.ref }}
+        run: |
+          echo "Repository: $GH_REPOSITORY"
+          echo "Ref: $GH_REF"
+          echo "Expected subject: repo:$GH_REPOSITORY:ref:$GH_REF"
 
       - name: Configure AWS credentials
         if: github.event_name != 'pull_request'
