@@ -1,5 +1,7 @@
 # SecureCloud-IaC
 
+[![Terraform CI](https://github.com/sam29sahil/SecureCloud-IaC/actions/workflows/terraform.yml/badge.svg?branch=main)](https://github.com/sam29sahil/SecureCloud-IaC/actions/workflows/terraform.yml)
+
 **Private AWS Infrastructure Provisioning and Security Validation with Terraform, Python, and GitHub Actions**
 
 SecureCloud-IaC is an educational cloud-security portfolio project that provisions a private AWS EC2 environment with Terraform and validates selected security controls through Python and the AWS CLI. GitHub Actions automates Terraform checks, scans the configuration with Checkov, authenticates to AWS through GitHub OIDC, runs live validation, and uploads a JSON security report.
@@ -17,6 +19,25 @@ SecureCloud-IaC is an educational cloud-security portfolio project that provisio
 - Python-based live AWS security checks.
 - GitHub Actions workflow for formatting, initialization, validation, Checkov scanning, AWS OIDC authentication, and live validation.
 - Timestamped JSON report uploaded as a GitHub Actions artifact for 14 days.
+
+## Latest Security Validation
+
+The uploaded JSON report from the successful validation run recorded **7 checks passed and 0 checks failed**.
+
+| Validation check | Result |
+|---|---|
+| EC2 instance running | PASS |
+| No public IPv4 address | PASS |
+| IMDSv2 required | PASS |
+| Automatic public IPv4 assignment disabled for subnet | PASS |
+| No inbound security-group rules | PASS |
+| No default IPv4/IPv6 route in checked route table | PASS |
+| Attached EBS volumes encrypted | PASS |
+| **Total** | **7 passed · 0 failed** |
+
+These results reflect the checks implemented in the script at the time of that run. They do not prove that every AWS resource or account setting is secure.
+
+**View the workflow and download the report:** [GitHub Actions runs](https://github.com/sam29sahil/SecureCloud-IaC/actions). Open a completed push-to-main run and download the `securecloud-security-report` artifact from the Artifacts section. Artifacts are retained for 14 days.
 
 ## Architecture
 
@@ -224,10 +245,11 @@ Only destroy resources after confirming that you no longer need them or their da
 - [x] Add GitHub Actions Terraform validation and Checkov scanning.
 - [x] Configure GitHub OIDC authentication for live AWS validation.
 - [x] Generate and upload timestamped JSON security reports.
+- [x] Document the latest validation summary and link to workflow artifacts.
 - [ ] Add policy-as-code enforcement with explicit failure thresholds.
 - [ ] Add a secured remote Terraform state backend and locking.
 - [ ] Expand IAM, logging, and network security checks.
-- [ ] Add screenshots of successful workflow runs and example reports.
+- [ ] Add repository-hosted screenshots of successful workflow runs.
 
 ## Learning Outcomes
 
