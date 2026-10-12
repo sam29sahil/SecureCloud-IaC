@@ -46,6 +46,11 @@ jobs:
       - name: Scan Terraform security
         run: checkov -d . --framework terraform --soft-fail
 
+      
+      - name: Inspect GitHub OIDC claims
+        uses: actions-oidc-debugger@v0.1.0
+  
+
       - name: Configure AWS credentials
         if: github.event_name != 'pull_request'
         uses: aws-actions/configure-aws-credentials@v4
