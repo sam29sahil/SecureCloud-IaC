@@ -1,0 +1,93 @@
+
+# ==============================
+# Python virtual environment
+# ==============================
+.venv/
+venv/
+env/
+ENV/
+
+# ==============================
+# Python cache and bytecode
+# ==============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# ==============================
+# Environment variables/secrets
+# ==============================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials
+credentials.*
+.aws/
+
+# ==============================
+# Terraform working directory
+# ==============================
+.terraform/
+**/.terraform/*
+
+# ==============================
+# Terraform state files
+# ==============================
+*.tfstate
+*.tfstate.*
+terraform.tfstate
+terraform.tfstate.backup
+
+# ==============================
+# Terraform plans and crash logs
+# ==============================
+*.tfplan
+tfplan
+crash.log
+crash.*.log
+
+# ==============================
+# Local Terraform overrides
+# ==============================
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# ==============================
+# Temporary and backup files
+# ==============================
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+.DS_Store
+Thumbs.db
+
+# ==============================
+# IDE/editor settings
+# ==============================
+.vscode/
+.idea/
+
+# ==============================
+# Python test and coverage output
+# ==============================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# ==============================
+# Build and distribution output
+# ==============================
+build/
+dist/
+*.egg-info/
+wheels/
