@@ -64,5 +64,7 @@ jobs:
 
       - name: Run live AWS security validation
         if: github.event_name != 'pull_request'
+        env:
+          EC2_INSTANCE_ID: i-0a87ebb74345717f0
         run: |
           python validate_security.py
