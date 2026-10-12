@@ -68,3 +68,12 @@ jobs:
           EC2_INSTANCE_ID: i-0a87ebb74345717f0
         run: |
           python validate_security.py
+
+      - name: Upload security report
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: securecloud-security-report
+          path: reports/security-report-*.json
+          if-no-files-found: warn
+          retention-days: 14
